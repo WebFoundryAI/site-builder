@@ -27,13 +27,21 @@ def parse_csv_input():
             if not row.get('domain'):
                 continue
 
-            # Validate required fields
-            required_fields = ['domain', 'city', 'service_type', 'business_name', 'phone', 'address_line1', 'address_line2', 'postcode', 'cf_project', 'repo_name', 'areas_radius_miles']
+            # Validate required fields (repo_name is optional - auto-generated from domain)
+            required_fields = ['domain', 'city', 'service_type', 'business_name', 'phone', 'address_line1', 'address_line2', 'postcode', 'cf_project', 'areas_radius_miles']
             missing = [f for f in required_fields if not row.get(f)]
 
             if missing:
                 print(f"ERROR: Missing fields in row: {', '.join(missing)}", file=sys.stderr)
                 sys.exit(1)
+
+            # Generate repo_name from domain if not provided
+            if row.get('repo_name'):
+                repo_name = row['repo_name'].strip()
+            else:
+                # Convert domain to repo name: bristolemergencyplumber.co.uk -> bristol-emergency-plumber-co-uk
+                domain_clean = row['domain'].lower().replace('.', '-')
+                repo_name = domain_clean
 
             # Validate domain format
             if not '.' in row['domain']:
@@ -60,7 +68,7 @@ def parse_csv_input():
                 'address_line2': row['address_line2'].strip(),
                 'postcode': row['postcode'].strip(),
                 'cf_project': row['cf_project'].strip(),
-                'repo_name': row['repo_name'].strip(),
+                'repo_name': repo_name,
                 'areas_radius_miles': int(float(row['areas_radius_miles'])),
             })
 

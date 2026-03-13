@@ -58,10 +58,7 @@ def validate_sites():
             if not site.get('cf_project'):
                 errors.append('cf_project is required')
 
-            if not site.get('repo_name'):
-                errors.append('repo_name is required')
-
-            # Validate repo_name format (alphanumeric, hyphens, underscores)
+            # repo_name is auto-generated from domain if not provided, so just validate if present
             if site.get('repo_name'):
                 if not all(c in 'abcdefghijklmnopqrstuvwxyz0123456789-_' for c in site['repo_name'].lower()):
                     errors.append('repo_name contains invalid characters (use alphanumeric, hyphens, underscores)')
