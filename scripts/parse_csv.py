@@ -28,7 +28,7 @@ def parse_csv_input():
                 continue
 
             # Validate required fields
-            required_fields = ['domain', 'city', 'service_type', 'business_name', 'phone', 'cf_project', 'repo_name', 'areas_radius_miles']
+            required_fields = ['domain', 'city', 'service_type', 'business_name', 'phone', 'address_line1', 'address_line2', 'postcode', 'cf_project', 'repo_name', 'areas_radius_miles']
             missing = [f for f in required_fields if not row.get(f)]
 
             if missing:
@@ -56,6 +56,9 @@ def parse_csv_input():
                 'service_type': row['service_type'].strip(),
                 'business_name': row['business_name'].strip(),
                 'phone': row['phone'].strip(),
+                'address_line1': row['address_line1'].strip(),
+                'address_line2': row['address_line2'].strip(),
+                'postcode': row['postcode'].strip(),
                 'cf_project': row['cf_project'].strip(),
                 'repo_name': row['repo_name'].strip(),
                 'areas_radius_miles': int(float(row['areas_radius_miles'])),

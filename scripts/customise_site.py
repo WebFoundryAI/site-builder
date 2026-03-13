@@ -10,7 +10,8 @@ import argparse
 import re
 from pathlib import Path
 
-def customize_brand_file(domain: str, city: str, business_name: str, phone: str):
+def customize_brand_file(domain: str, city: str, business_name: str, phone: str,
+                        address_line1: str, address_line2: str, postcode: str):
     """Update src/data/brand.ts with new site details."""
     brand_file = Path('src/data/brand.ts')
 
@@ -45,8 +46,26 @@ def customize_brand_file(domain: str, city: str, business_name: str, phone: str)
         content
     )
 
+    # Update address
+    content = re.sub(
+        r'addressLine1: "[^"]*"',
+        f'addressLine1: "{address_line1}"',
+        content
+    )
+
+    content = re.sub(
+        r'addressLine2: "[^"]*"',
+        f'addressLine2: "{address_line2}"',
+        content
+    )
+
+    content = re.sub(
+        r'postcode: "[^"]*"',
+        f'postcode: "{postcode}"',
+        content
+    )
+
     # Email based on domain
-    email_local = business_name.lower().replace(' ', '')[:10]
     email = f"info@{domain}"
     content = re.sub(
         r'email: "[^"]*"',
@@ -95,12 +114,13 @@ def customize_config_files(domain: str):
         print(f"✓ Updated astro.config.mjs", file=sys.stderr)
 
 def customize_site(domain: str, city: str, business_name: str, phone: str,
+                   address_line1: str, address_line2: str, postcode: str,
                    service_areas: str, service_type: str):
     """Main customization function."""
     print(f"Customizing site for {business_name} ({domain})...", file=sys.stderr)
 
     try:
-        customize_brand_file(domain, city, business_name, phone)
+        customize_brand_file(domain, city, business_name, phone, address_line1, address_line2, postcode)
         customize_locations_file(city)
         customize_config_files(domain)
         customize_service_areas(city, service_areas)
@@ -117,6 +137,9 @@ if __name__ == '__main__':
     parser.add_argument('--city', required=True, help='City name')
     parser.add_argument('--business-name', required=True, help='Business name')
     parser.add_argument('--phone', required=True, help='Business phone')
+    parser.add_argument('--address-line1', required=True, help='Address line 1')
+    parser.add_argument('--address-line2', required=True, help='Address line 2')
+    parser.add_argument('--postcode', required=True, help='Postcode')
     parser.add_argument('--service-areas', required=True, help='Service areas JSON file')
     parser.add_argument('--service-type', required=True, help='Service type')
 
@@ -126,6 +149,9 @@ if __name__ == '__main__':
         args.city,
         args.business_name,
         args.phone,
+        args.address_line1,
+        args.address_line2,
+        args.postcode,
         args.service_areas,
         args.service_type
     )

@@ -90,6 +90,9 @@ jobs:
             --city "${{ matrix.site.city }}" \
             --business-name "${{ matrix.site.business_name }}" \
             --phone "${{ matrix.site.phone }}" \
+            --address-line1 "${{ matrix.site.address_line1 }}" \
+            --address-line2 "${{ matrix.site.address_line2 }}" \
+            --postcode "${{ matrix.site.postcode }}" \
             --service-areas service_areas.json \
             --service-type "${{ matrix.site.service_type }}"
 
