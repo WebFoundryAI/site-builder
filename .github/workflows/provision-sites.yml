@@ -13,6 +13,11 @@ on:
         default: '2'
         type: string
 
+permissions:
+  contents: write
+  packages: write
+  repository-projects: write
+
 jobs:
   parse-and-validate:
     runs-on: ubuntu-latest
@@ -133,6 +138,7 @@ jobs:
             --template-dir template
 
       - name: Commit and push to new repo
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -140,8 +146,19 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
-          git commit -m "chore: customize site for ${{ matrix.site.domain }}"
-          gh repo create WebFoundryAI/${{ matrix.site.repo_name }} --public --source=. --remote=origin --push
+          git commit -m "chore: customize site for ${{ matrix.site.domain }}" || true
+
+          # Try to create repo with workflow token - may fail if no permission
+          gh repo create WebFoundryAI/${{ matrix.site.repo_name }} --public --source=. --remote=origin --push || {
+            echo "WARNING: Could not create repo with current token. Using custom PAT token if available..."
+            if [ ! -z "${{ secrets.GH_PAT_TOKEN }}" ]; then
+              gh auth login --with-token <<< "${{ secrets.GH_PAT_TOKEN }}"
+              gh repo create WebFoundryAI/${{ matrix.site.repo_name }} --public --source=. --remote=origin --push
+            else
+              echo "ERROR: GH_PAT_TOKEN secret not configured. Please create the repo manually or add a PAT token as GH_PAT_TOKEN secret."
+              exit 1
+            fi
+          }
 
       - name: Set GitHub secrets
         env:
