@@ -113,6 +113,47 @@ def customize_config_files(domain: str, template_dir: str = '.'):
         config_file.write_text(content)
         print(f"✓ Updated astro.config.mjs", file=sys.stderr)
 
+def customize_schema_file(city: str, latitude: float, longitude: float, template_dir: str = '.'):
+    """Update src/utils/schema.ts with correct city coordinates."""
+    schema_file = Path(template_dir) / 'src/utils/schema.ts'
+
+    if not schema_file.exists():
+        return
+
+    content = schema_file.read_text()
+
+    # Update GeoCoordinates latitude/longitude
+    content = re.sub(
+        r'"latitude":\s*[\d.-]+',
+        f'"latitude": {latitude}',
+        content
+    )
+    content = re.sub(
+        r'"longitude":\s*[\d.-]+',
+        f'"longitude": {longitude}',
+        content
+    )
+
+    schema_file.write_text(content)
+    print(f"✓ Updated schema.ts with coordinates ({latitude}, {longitude}) for {city}", file=sys.stderr)
+
+# City to coordinates mapping (lat, lon)
+CITY_COORDINATES = {
+    'Aberdeen': (57.1497, -2.0943),
+    'Aldershot': (51.2475, -0.7576),
+    'Basildon': (51.5765, 0.4743),
+    'Basingstoke': (51.2746, -1.0857),
+    'Bournemouth': (50.7352, -1.8197),
+    'Burnley': (53.7969, -2.2200),
+    'Burton upon Trent': (52.8069, -1.6411),
+    'Chelmsford': (51.7353, 0.4743),
+    'Colchester': (51.8949, 0.9023),
+    'Darlington': (54.5236, -1.5503),
+    'Doncaster': (53.5228, -1.1309),
+    'Dundee': (56.4627, -2.9707),
+    'Exeter': (50.7184, -3.5339),
+}
+
 def customize_site(domain: str, city: str, business_name: str, phone: str,
                    address_line1: str, address_line2: str, postcode: str,
                    service_areas: str, service_type: str, template_dir: str = '.'):
@@ -124,6 +165,11 @@ def customize_site(domain: str, city: str, business_name: str, phone: str,
         customize_locations_file(city, template_dir)
         customize_config_files(domain, template_dir)
         customize_service_areas(city, service_areas)
+
+        # Update coordinates if city is in mapping
+        if city in CITY_COORDINATES:
+            lat, lon = CITY_COORDINATES[city]
+            customize_schema_file(city, lat, lon, template_dir)
 
         print(f"✓ Site customization complete", file=sys.stderr)
 
