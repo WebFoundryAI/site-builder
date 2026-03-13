@@ -152,6 +152,8 @@ jobs:
           gh repo create WebFoundryAI/${{ matrix.site.repo_name }} --public --source=. --remote=origin --push || {
             echo "WARNING: Could not create repo with current token. Using custom PAT token if available..."
             if [ ! -z "${{ secrets.GH_PAT_TOKEN }}" ]; then
+              # Unset GITHUB_TOKEN to allow gh to use the PAT token instead
+              unset GITHUB_TOKEN
               gh auth login --with-token <<< "${{ secrets.GH_PAT_TOKEN }}"
               gh repo create WebFoundryAI/${{ matrix.site.repo_name }} --public --source=. --remote=origin --push
             else
