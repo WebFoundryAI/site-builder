@@ -149,18 +149,24 @@ jobs:
           git commit -m "chore: customize site for ${{ matrix.site.domain }}" || true
 
           # Try to create repo with workflow token - may fail if no permission
-          gh repo create WebFoundryAI/${{ matrix.site.repo_name }} --public --source=. --remote=origin --push || {
+          gh repo create WebFoundryAI/${{ matrix.site.repo_name }} --public || {
             echo "WARNING: Could not create repo with current token. Using custom PAT token if available..."
             if [ ! -z "${{ secrets.GH_PAT_TOKEN }}" ]; then
               # Unset GITHUB_TOKEN to allow gh to use the PAT token instead
               unset GITHUB_TOKEN
               gh auth login --with-token <<< "${{ secrets.GH_PAT_TOKEN }}"
-              gh repo create WebFoundryAI/${{ matrix.site.repo_name }} --public --source=. --remote=origin --push
+              gh repo create WebFoundryAI/${{ matrix.site.repo_name }} --public
             else
               echo "ERROR: GH_PAT_TOKEN secret not configured. Please create the repo manually or add a PAT token as GH_PAT_TOKEN secret."
               exit 1
             fi
           }
+
+          # Push code to repo
+          git remote remove origin || true
+          git remote add origin https://x-access-token:${{ secrets.GH_PAT_TOKEN }}@github.com/WebFoundryAI/${{ matrix.site.repo_name }}.git
+          git branch -M main
+          git push -u origin main
 
       - name: Set GitHub secrets
         continue-on-error: true
