@@ -4,8 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       csv_content:
-        description: 'CSV content (domain,city,service_type,business_name,phone,cf_project,repo_name,areas_radius_miles)'
-        required: true
+        description: 'CSV content (paste here OR commit to sites/provision.csv and leave blank)'
+        required: false
+        type: string
+      max_parallel:
+        description: 'Max parallel jobs (default: 2, max: 20)'
+        required: false
+        default: '2'
         type: string
 
 jobs:
@@ -21,12 +26,30 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Check for CSV file
+        id: csv-check
+        run: |
+          if [ -f "sites/provision.csv" ]; then
+            echo "use_file=true" >> $GITHUB_OUTPUT
+            echo "CSV file found: sites/provision.csv"
+          else
+            echo "use_file=false" >> $GITHUB_OUTPUT
+            if [ -z "${{ inputs.csv_content }}" ]; then
+              echo "ERROR: No CSV provided. Either commit sites/provision.csv or paste CSV content" >&2
+              exit 1
+            fi
+          fi
+
       - name: Parse CSV input
         id: parse
         run: |
-          python scripts/parse_csv.py << 'EOF'
-          ${{ inputs.csv_content }}
-          EOF
+          if [ "${{ steps.csv-check.outputs.use_file }}" = "true" ]; then
+            python scripts/parse_csv.py < sites/provision.csv
+          else
+            python scripts/parse_csv.py << 'EOF'
+            ${{ inputs.csv_content }}
+            EOF
+          fi
 
       - name: Validate replacements
         run: |
@@ -38,7 +61,7 @@ jobs:
     needs: parse-and-validate
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 2
+      max-parallel: ${{ fromJson(inputs.max_parallel || '2') }}
       matrix:
         site: ${{ fromJson(needs.parse-and-validate.outputs.sites) }}
 
