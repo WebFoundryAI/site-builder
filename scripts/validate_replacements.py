@@ -41,8 +41,7 @@ def validate_sites():
             if not site.get('business_name'):
                 errors.append('business_name is required')
 
-            if not site.get('phone'):
-                errors.append('phone is required')
+            # phone is optional (can be blank)
 
             if not site.get('address_line1'):
                 errors.append('address_line1 is required')
