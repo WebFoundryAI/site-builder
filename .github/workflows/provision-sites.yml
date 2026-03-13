@@ -68,9 +68,12 @@ jobs:
         site: ${{ fromJson(needs.parse-and-validate.outputs.sites) }}
 
     steps:
-      - name: Clone manchester template
+      - uses: actions/checkout@v4
+
+      - name: Clone manchester template to subdirectory
         run: |
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/WebFoundryAI/manchester_blocked_drain_co_uk .
+          git clone https://github.com/WebFoundryAI/manchester_blocked_drain_co_uk template
+          cd template
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
@@ -84,7 +87,7 @@ jobs:
           python ${{ github.workspace }}/scripts/generate_service_areas.py \
             --city "${{ matrix.site.city }}" \
             --radius ${{ matrix.site.areas_radius_miles }} \
-            --output service_areas.json
+            --output template/service_areas.json
 
       - name: Customize site
         run: |
@@ -96,8 +99,9 @@ jobs:
             --address-line1 "${{ matrix.site.address_line1 }}" \
             --address-line2 "${{ matrix.site.address_line2 }}" \
             --postcode "${{ matrix.site.postcode }}" \
-            --service-areas service_areas.json \
-            --service-type "${{ matrix.site.service_type }}"
+            --service-areas template/service_areas.json \
+            --service-type "${{ matrix.site.service_type }}" \
+            --template-dir template
 
       - name: Setup Cloudflare Pages
         env:
@@ -114,12 +118,14 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           python ${{ github.workspace }}/scripts/setup_d1.py \
-            --project "${{ matrix.site.cf_project }}"
+            --project "${{ matrix.site.cf_project }}" \
+            --template-dir template
 
       - name: Commit and push to new repo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          cd template
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A

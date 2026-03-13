@@ -11,9 +11,9 @@ import re
 from pathlib import Path
 
 def customize_brand_file(domain: str, city: str, business_name: str, phone: str,
-                        address_line1: str, address_line2: str, postcode: str):
+                        address_line1: str, address_line2: str, postcode: str, template_dir: str = '.'):
     """Update src/data/brand.ts with new site details."""
-    brand_file = Path('src/data/brand.ts')
+    brand_file = Path(template_dir) / 'src/data/brand.ts'
 
     if not brand_file.exists():
         print(f"ERROR: {brand_file} not found", file=sys.stderr)
@@ -76,9 +76,9 @@ def customize_brand_file(domain: str, city: str, business_name: str, phone: str,
     brand_file.write_text(content)
     print(f"✓ Updated brand.ts", file=sys.stderr)
 
-def customize_locations_file(city: str):
+def customize_locations_file(city: str, template_dir: str = '.'):
     """Update src/data/locations.ts with new primary location."""
-    locations_file = Path('src/data/locations.ts')
+    locations_file = Path(template_dir) / 'src/data/locations.ts'
 
     if not locations_file.exists():
         print(f"ERROR: {locations_file} not found", file=sys.stderr)
@@ -99,9 +99,9 @@ def customize_service_areas(city: str, service_areas_file: str):
 
     print(f"✓ Loaded service areas: {areas.get('count', 0)} areas for {city}", file=sys.stderr)
 
-def customize_config_files(domain: str):
+def customize_config_files(domain: str, template_dir: str = '.'):
     """Update astro.config.mjs and other config files."""
-    config_file = Path('astro.config.mjs')
+    config_file = Path(template_dir) / 'astro.config.mjs'
 
     if config_file.exists():
         content = config_file.read_text()
@@ -115,14 +115,14 @@ def customize_config_files(domain: str):
 
 def customize_site(domain: str, city: str, business_name: str, phone: str,
                    address_line1: str, address_line2: str, postcode: str,
-                   service_areas: str, service_type: str):
+                   service_areas: str, service_type: str, template_dir: str = '.'):
     """Main customization function."""
     print(f"Customizing site for {business_name} ({domain})...", file=sys.stderr)
 
     try:
-        customize_brand_file(domain, city, business_name, phone, address_line1, address_line2, postcode)
-        customize_locations_file(city)
-        customize_config_files(domain)
+        customize_brand_file(domain, city, business_name, phone, address_line1, address_line2, postcode, template_dir)
+        customize_locations_file(city, template_dir)
+        customize_config_files(domain, template_dir)
         customize_service_areas(city, service_areas)
 
         print(f"✓ Site customization complete", file=sys.stderr)
@@ -142,6 +142,7 @@ if __name__ == '__main__':
     parser.add_argument('--postcode', required=True, help='Postcode')
     parser.add_argument('--service-areas', required=True, help='Service areas JSON file')
     parser.add_argument('--service-type', required=True, help='Service type')
+    parser.add_argument('--template-dir', default='.', help='Template directory (default: current directory)')
 
     args = parser.parse_args()
     customize_site(
@@ -153,5 +154,6 @@ if __name__ == '__main__':
         args.address_line2,
         args.postcode,
         args.service_areas,
-        args.service_type
+        args.service_type,
+        args.template_dir
     )

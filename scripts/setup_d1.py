@@ -96,9 +96,9 @@ def initialize_database_schema(db_id: str, account_id: str, api_token: str):
     except Exception as e:
         print(f"WARNING: {str(e)}", file=sys.stderr)
 
-def update_wrangler_toml(db_id: str):
+def update_wrangler_toml(db_id: str, template_dir: str = '.'):
     """Update wrangler.toml with D1 database ID."""
-    wrangler_file = Path('wrangler.toml')
+    wrangler_file = Path(template_dir) / 'wrangler.toml'
 
     if not wrangler_file.exists():
         print(f"WARNING: wrangler.toml not found", file=sys.stderr)
@@ -120,7 +120,7 @@ def update_wrangler_toml(db_id: str):
     wrangler_file.write_text(content)
     print(f"✓ Updated wrangler.toml with D1 binding", file=sys.stderr)
 
-def setup_d1(project: str):
+def setup_d1(project: str, template_dir: str = '.'):
     """Setup D1 database for project."""
     account_id = os.environ.get('CLOUDFLARE_ACCOUNT_ID')
     api_token = os.environ.get('CLOUDFLARE_API_TOKEN')
@@ -131,7 +131,7 @@ def setup_d1(project: str):
 
     db = create_d1_database(project, account_id, api_token)
     initialize_database_schema(db['id'], account_id, api_token)
-    update_wrangler_toml(db['id'])
+    update_wrangler_toml(db['id'], template_dir)
 
     print(f"✓ D1 setup complete", file=sys.stderr)
 
@@ -140,6 +140,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Setup Cloudflare D1 database')
     parser.add_argument('--project', required=True, help='Cloudflare project name')
+    parser.add_argument('--template-dir', default='.', help='Template directory (default: current directory)')
 
     args = parser.parse_args()
-    setup_d1(args.project)
+    setup_d1(args.project, args.template_dir)
