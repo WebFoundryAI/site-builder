@@ -105,19 +105,29 @@ jobs:
             --template-dir template
 
       - name: Setup Cloudflare Pages
+        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "WARNING: Cloudflare secrets not configured, skipping Pages setup" >&2
+            exit 0
+          fi
           bash ${{ github.workspace }}/scripts/setup_cloudflare_pages.sh \
             "${{ matrix.site.cf_project }}" \
             "${{ matrix.site.domain }}"
 
       - name: Setup D1 Database
+        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "WARNING: Cloudflare secrets not configured, skipping D1 setup" >&2
+            exit 0
+          fi
           python ${{ github.workspace }}/scripts/setup_d1.py \
             --project "${{ matrix.site.cf_project }}" \
             --template-dir template
