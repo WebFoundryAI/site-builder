@@ -68,10 +68,11 @@ jobs:
         site: ${{ fromJson(needs.parse-and-validate.outputs.sites) }}
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: WebFoundryAI/manchester_blocked_drain_co_uk
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Clone manchester template
+        run: |
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/WebFoundryAI/manchester_blocked_drain_co_uk .
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
 
       - name: Set up Python
         uses: actions/setup-python@v4
