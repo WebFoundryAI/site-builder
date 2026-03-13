@@ -163,9 +163,14 @@ jobs:
           }
 
       - name: Set GitHub secrets
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] || [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "WARNING: Cloudflare secrets not configured, skipping GitHub secrets setup" >&2
+            exit 0
+          fi
           bash ${{ github.workspace }}/scripts/set_github_secrets.sh \
             "${{ matrix.site.repo_name }}" \
             "${{ secrets.CLOUDFLARE_API_TOKEN }}" \
