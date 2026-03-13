@@ -17,7 +17,7 @@ jobs:
   parse-and-validate:
     runs-on: ubuntu-latest
     outputs:
-      sites: ${{ steps.parse.outputs.sites }}
+      sites: ${{ steps.parse.outputs.sites || steps.parse-manual.outputs.sites }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,22 +40,24 @@ jobs:
             fi
           fi
 
-      - name: Parse CSV input
+      - name: Parse CSV from file
         id: parse
+        if: ${{ steps.csv-check.outputs.use_file == 'true' }}
+        run: python scripts/parse_csv.py < sites/provision.csv
+
+      - name: Parse CSV from input
+        id: parse-manual
+        if: ${{ steps.csv-check.outputs.use_file != 'true' }}
         run: |
-          if [ "${{ steps.csv-check.outputs.use_file }}" = "true" ]; then
-            python scripts/parse_csv.py < sites/provision.csv
-          else
-            python scripts/parse_csv.py << 'EOF'
-            ${{ inputs.csv_content }}
-            EOF
-          fi
+          python scripts/parse_csv.py << 'CSVEOF'
+          ${{ inputs.csv_content }}
+          CSVEOF
 
       - name: Validate replacements
         run: |
-          python scripts/validate_replacements.py << 'EOF'
-          ${{ steps.parse.outputs.sites }}
-          EOF
+          python scripts/validate_replacements.py << 'VALEOF'
+          ${{ steps.parse.outputs.sites || steps.parse-manual.outputs.sites }}
+          VALEOF
 
   provision:
     needs: parse-and-validate

@@ -10,6 +10,7 @@ bristolemergencyplumber.co.uk,Bristol,Emergency Plumber,Bristol Emergency Plumbe
 import sys
 import json
 import csv
+import os
 from io import StringIO
 
 def parse_csv_input():
@@ -78,7 +79,8 @@ def parse_csv_input():
 
         # Output as JSON string for GitHub Actions
         json_output = json.dumps(sites)
-        print(f"::set-output name=sites::{json_output}")
+        with open(os.environ.get('GITHUB_OUTPUT', '/dev/stdout'), 'a') as f:
+            f.write(f"sites={json_output}\n")
 
     except Exception as e:
         print(f"ERROR: Failed to parse CSV: {str(e)}", file=sys.stderr)
