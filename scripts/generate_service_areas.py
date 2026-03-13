@@ -58,12 +58,29 @@ def get_nearby_areas(latitude: float, longitude: float, radius_miles: int) -> li
         print(f"WARNING: Failed to get nearby areas: {str(e)}", file=sys.stderr)
         return []
 
-def generate_service_areas(city: str, radius_miles: int, output_file: str):
+def generate_service_areas(city: str, radius_miles: int, output_file: str, postcode: str = None):
     """Generate and save service areas JSON."""
     print(f"Generating service areas for {city} (radius: {radius_miles} miles)...", file=sys.stderr)
 
     # Get city center coordinates
-    city_data = get_postcode_for_city(city)
+    if postcode:
+        # Use provided postcode for coordinates
+        try:
+            url = f"https://api.postcodes.io/postcodes/{postcode.replace(' ', '')}"
+            with urllib.request.urlopen(url) as response:
+                data = json.loads(response.read().decode())
+
+            if data['status'] != 200 or not data['result']:
+                print(f"WARNING: Could not find postcode {postcode}, falling back to city name lookup", file=sys.stderr)
+                city_data = get_postcode_for_city(city)
+            else:
+                city_data = data['result']
+        except Exception as e:
+            print(f"WARNING: Postcode lookup failed ({str(e)}), falling back to city name", file=sys.stderr)
+            city_data = get_postcode_for_city(city)
+    else:
+        city_data = get_postcode_for_city(city)
+
     latitude = city_data['latitude']
     longitude = city_data['longitude']
 
@@ -94,6 +111,7 @@ if __name__ == '__main__':
     parser.add_argument('--city', required=True, help='City name')
     parser.add_argument('--radius', type=int, required=True, help='Radius in miles')
     parser.add_argument('--output', required=True, help='Output JSON file path')
+    parser.add_argument('--postcode', help='Optional: postcode for city center (for more accurate coordinates)')
 
     args = parser.parse_args()
-    generate_service_areas(args.city, args.radius, args.output)
+    generate_service_areas(args.city, args.radius, args.output, args.postcode)

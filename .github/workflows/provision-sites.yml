@@ -87,6 +87,7 @@ jobs:
           python ${{ github.workspace }}/scripts/generate_service_areas.py \
             --city "${{ matrix.site.city }}" \
             --radius ${{ matrix.site.areas_radius_miles }} \
+            --postcode "${{ matrix.site.postcode }}" \
             --output template/service_areas.json
 
       - name: Customize site
