@@ -47,9 +47,6 @@ def validate_sites():
             if not site.get('address_line1'):
                 errors.append('address_line1 is required')
 
-            if not site.get('address_line2'):
-                errors.append('address_line2 is required')
-
             if not site.get('postcode'):
                 errors.append('postcode is required')
             elif not all(c.isalnum() or c in ' -' for c in site['postcode']):

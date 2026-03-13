@@ -20,28 +20,28 @@ This GitHub Actions workflow automates the process of cloning and customizing th
 Create `sites/provision.csv` with one row per site:
 
 ```csv
-domain,city,service_type,business_name,phone,address_line1,address_line2,postcode,areas_radius_miles
-bristolemergencyplumber.co.uk,Bristol,Emergency Plumber,Bristol Emergency Plumber,0117 428 0200,Unit 2 Broad Street,Bristol,BS1 2HF,15
-cardiffplumber.co.uk,Cardiff,24-Hour Plumber,Cardiff 24 Hour Plumber,029 2037 0100,10 The Hayes,Cardiff,CF10 1AH,12
+domain,city,business_name,phone,address_line1,postcode,areas_radius_miles
+BlockedDrainsAberdeen.co.uk,Aberdeen,Blocked Drains Aberdeen,0800 611 8150,1 Berry Street,AB25 1HF,20
+blockeddrainsinaldershot.co.uk,Aldershot,Blocked Drains in Aldershot,0800 30 77 008,14-40 Victoria Rd,GU11 1TQ,20
 ```
 
 **Column Definitions:**
 
 | Column | Description | Example |
 |--------|-------------|---------|
-| `domain` | Full domain for new site | `bristolemergencyplumber.co.uk` |
-| `city` | Primary city served | `Bristol` |
-| `service_type` | Service category (displayed on all pages) | `Emergency Plumber` or `Blocked Drains` |
-| `business_name` | Business legal name | `Bristol Emergency Plumber` |
-| `phone` | Business phone with spaces/formatting | `0117 428 0200` |
-| `address_line1` | Business address line 1 | `Unit 2 Broad Street` |
-| `address_line2` | Business address line 2 (city/town) | `Bristol` |
-| `postcode` | Business postcode | `BS1 2HF` |
-| `areas_radius_miles` | Service radius from city center (integer) | `15` |
+| `domain` | Full domain for new site | `BlockedDrainsAberdeen.co.uk` |
+| `city` | Primary city served | `Aberdeen` |
+| `business_name` | Business legal name | `Blocked Drains Aberdeen` |
+| `phone` | Business phone (can be blank) | `0800 611 8150` |
+| `address_line1` | Business address line 1 | `1 Berry Street` |
+| `postcode` | Business postcode | `AB25 1HF` |
+| `areas_radius_miles` | Service radius from city center (integer) | `20` |
 
-**Auto-Generated from Domain:**
-- `cf_project` — Cloudflare Pages project name (e.g., `bristolemergencyplumber.co.uk` → `bristol-emergency-plumber-co-uk`)
-- `repo_name` — GitHub repository name (e.g., `bristolemergencyplumber.co.uk` → `bristol-emergency-plumber-co-uk`)
+**Auto-Generated:**
+- `address_line2` — City name (from `city` column)
+- `service_type` — "Emergency Plumber" (set during site customization)
+- `cf_project` — Cloudflare Pages project name (e.g., `BlockedDrainsAberdeen.co.uk` → `blocked-drains-aberdeen-co-uk`)
+- `repo_name` — GitHub repository name (e.g., `BlockedDrainsAberdeen.co.uk` → `blocked-drains-aberdeen-co-uk`)
 
 ### Step 2: Commit CSV to Repository
 
@@ -154,27 +154,28 @@ Set these GitHub secrets at **organization level** (WebFoundryAI):
 ## Example: Provisioning 15 Sites
 
 ```csv
-domain,city,service_type,business_name,phone,address_line1,address_line2,postcode,areas_radius_miles
-bristolemergencyplumber.co.uk,Bristol,Emergency Plumber,Bristol Emergency Plumber,0117 428 0200,Unit 2 Broad Street,Bristol,BS1 2HF,15
-cardiffplumber.co.uk,Cardiff,24-Hour Plumber,Cardiff 24 Hour Plumber,029 2037 0100,10 The Hayes,Cardiff,CF10 1AH,12
-leedsdrainunblock.co.uk,Leeds,Blocked Drains,Leeds Drain Unblock,0113 468 9300,Sovereign House,Leeds,LS1 4BJ,15
-manchesteremergency.co.uk,Manchester,Emergency Plumber,Manchester Emergency Plumber,0161 282 8080,Unit 1 Stockport Road,Manchester,M12 6DF,18
-birminghamdrains.co.uk,Birmingham,Blocked Drains,Birmingham Drains,0121 555 0100,27 Newhall Street,Birmingham,B3 1HQ,14
-edinburghplumber.co.uk,Edinburgh,Emergency Plumber,Edinburgh Emergency Plumber,0131 226 8080,12 Multrees Walk,Edinburgh,EH2 3DQ,12
-glasgowdrains.co.uk,Glasgow,Blocked Drains,Glasgow Drain Unblock,0141 285 5656,123 Sauchiehall Street,Glasgow,G2 3HQ,13
-liverplumber.co.uk,Liverpool,Emergency Plumber,Liverpool Emergency Plumber,0151 707 8080,8 Cook Street,Liverpool,L2 3QP,11
-newcastleplumber.co.uk,Newcastle,24-Hour Plumber,Newcastle 24 Hour Plumber,0191 500 0100,Collingwood House,Newcastle,NE1 1TF,10
-nottinghamdrains.co.uk,Nottingham,Blocked Drains,Nottingham Blocked Drains,0115 847 0000,51 High Street,Nottingham,NG1 2AP,14
-sheffieldplumber.co.uk,Sheffield,Emergency Plumber,Sheffield Emergency Plumber,0114 275 0100,123 West Street,Sheffield,S1 4EJ,12
-coventryplumber.co.uk,Coventry,24-Hour Plumber,Coventry 24 Hour Plumber,024 7660 0700,9 Little Park Street,Coventry,CV1 2UR,11
-leicesterdrain.co.uk,Leicester,Blocked Drains,Leicester Drain Unblock,0116 222 0100,61 High Street,Leicester,LE1 4BP,12
-bristoldrain.co.uk,Bristol,Blocked Drains,Bristol Blocked Drains,0117 428 0200,Unit 2 Broad Street,Bristol,BS1 2HF,15
-londonemergency.co.uk,London,Emergency Plumber,London Emergency Plumber,020 7078 8202,123 Bond Street,London,W1S 1AZ,20
-stokeplumber.co.uk,Stoke-on-Trent,24-Hour Plumber,Stoke-on-Trent 24 Hour Plumber,01782 550 0100,Etruria Vale,Stoke-on-Trent,ST4 7BF,12
+domain,city,business_name,phone,address_line1,postcode,areas_radius_miles
+BlockedDrainsAberdeen.co.uk,Aberdeen,Blocked Drains Aberdeen,0800 611 8150,1 Berry Street,AB25 1HF,20
+blockeddrainsinaldershot.co.uk,Aldershot,Blocked Drains in Aldershot,0800 30 77 008,14-40 Victoria Rd,GU11 1TQ,20
+plumbersbasildon247.co.uk,Basildon,Plumbers Basildon 247,01268 744500,7 High Pavement,SS14 1EA,20
+plumbersbasingstoke.co.uk,Basingstoke,Plumbers Basingstoke,01256 840777,35/41 Essex Road,RG21 7TB,20
+PlumbersBournemouth247.co.uk,Bournemouth,Plumbers Bournemouth 247,02380 111200,10 Poole Hill,BH2 5PS,20
+DrainBustersBurnley.co.uk,Burnley,Drain Busters Burnley,0121 555 0100,Elm Street Business Park,BB10 1PD,20
+burtonupontrentplumbers.co.uk,Burton upon Trent,Burton upon Trent Plumbers,01283 500100,Curzon Street,DE14 2DH,20
+plumberschelmsford247.co.uk,Chelmsford,Plumbers Chelmsford 247,01245 203555,Criterion House 40 Parkway,CM2 7PN,20
+emergencyplumbercolchester.co.uk,Colchester,Emergency Plumber Colchester,01206 548833,1 George Williams Way,CO1 2JS,20
+PlumbErinDarlington.co.uk,Darlington,Plumber in Darlington,0113 468 9300,20 Woodland Road,DL3 7PL,20
+drainclearancedoncaster.co.uk,Doncaster,Drain Clearance Doncaster,01302 368686,22-28 Wood Street,DN1 3LW,20
+blockeddrainscleareddundee.co.uk,Dundee,Blocked Drains Cleared Dundee,01382 225517,18 South Tay Street,DD1 1PD,20
+emergencyplumberexeter.co.uk,Exeter,Emergency Plumber Exeter,01392 354800,48 Queen Street,EX4 3SR,20
+emergencyplumberfife.co.uk,Fife,Emergency Plumber Fife,01592 280000,123 High Street,KY2 8NS,18
+plumbersgateshead.co.uk,Gateshead,Plumbers Gateshead,0191 500 0100,10 Team Valley,NE11 0BQ,15
 ```
 
-**Auto-generated from domain:**
-- `cf_project` → `bristol-emergency-plumber-co-uk`, `cardiff-plumber-co-uk`, etc.
+All fields auto-generated:
+- `address_line2` → City name
+- `service_type` → "Emergency Plumber"
+- `cf_project` → Domain with dots replaced by hyphens
 - `repo_name` → Same as cf_project
 
 **Process:**

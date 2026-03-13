@@ -27,8 +27,8 @@ def parse_csv_input():
             if not row.get('domain'):
                 continue
 
-            # Validate required fields (cf_project and repo_name are auto-generated from domain)
-            required_fields = ['domain', 'city', 'service_type', 'business_name', 'phone', 'address_line1', 'address_line2', 'postcode', 'areas_radius_miles']
+            # Validate required fields (cf_project, repo_name, address_line2, service_type are auto-generated)
+            required_fields = ['domain', 'city', 'business_name', 'phone', 'address_line1', 'postcode', 'areas_radius_miles']
             missing = [f for f in required_fields if not row.get(f)]
 
             if missing:
@@ -40,6 +40,12 @@ def parse_csv_input():
             domain_clean = row['domain'].lower().replace('.', '-')
             repo_name = domain_clean
             cf_project = domain_clean
+
+            # address_line2 defaults to city
+            address_line2 = row.get('address_line2', row['city'].strip()).strip()
+
+            # service_type will be set during site customization (default: "Emergency Plumber")
+            service_type = 'Emergency Plumber'
 
             # Validate domain format
             if not '.' in row['domain']:
@@ -59,11 +65,11 @@ def parse_csv_input():
             sites.append({
                 'domain': row['domain'].strip(),
                 'city': row['city'].strip(),
-                'service_type': row['service_type'].strip(),
+                'service_type': service_type,
                 'business_name': row['business_name'].strip(),
-                'phone': row['phone'].strip(),
+                'phone': row['phone'].strip() if row.get('phone') else '',
                 'address_line1': row['address_line1'].strip(),
-                'address_line2': row['address_line2'].strip(),
+                'address_line2': address_line2,
                 'postcode': row['postcode'].strip(),
                 'cf_project': cf_project,
                 'repo_name': repo_name,
