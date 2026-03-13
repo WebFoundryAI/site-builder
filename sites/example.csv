@@ -1,3 +1,3 @@
-domain,city,service_type,business_name,phone,address_line1,address_line2,postcode,cf_project,areas_radius_miles
-bristolemergencyplumber.co.uk,Bristol,Emergency Plumber,Bristol Emergency Plumber,0117 428 0200,Unit 2 Broad Street,Bristol,BS1 2HF,bristol-ep,15
-glasgowdrainunblocker.co.uk,Glasgow,Blocked Drains,Glasgow Drain Unblocker,0141 285 5656,123 Sauchiehall Street,Glasgow,G2 3HQ,glasgow-du,12
+domain,city,service_type,business_name,phone,address_line1,address_line2,postcode,areas_radius_miles
+bristolemergencyplumber.co.uk,Bristol,Emergency Plumber,Bristol Emergency Plumber,0117 428 0200,Unit 2 Broad Street,Bristol,BS1 2HF,15
+glasgowdrainunblocker.co.uk,Glasgow,Blocked Drains,Glasgow Drain Unblocker,0141 285 5656,123 Sauchiehall Street,Glasgow,G2 3HQ,12

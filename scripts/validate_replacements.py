@@ -55,10 +55,11 @@ def validate_sites():
             elif not all(c.isalnum() or c in ' -' for c in site['postcode']):
                 errors.append('postcode contains invalid characters')
 
-            if not site.get('cf_project'):
-                errors.append('cf_project is required')
+            # cf_project and repo_name are auto-generated from domain, validate if present
+            if site.get('cf_project'):
+                if not all(c in 'abcdefghijklmnopqrstuvwxyz0123456789-' for c in site['cf_project'].lower()):
+                    errors.append('cf_project contains invalid characters')
 
-            # repo_name is auto-generated from domain if not provided, so just validate if present
             if site.get('repo_name'):
                 if not all(c in 'abcdefghijklmnopqrstuvwxyz0123456789-_' for c in site['repo_name'].lower()):
                     errors.append('repo_name contains invalid characters (use alphanumeric, hyphens, underscores)')
