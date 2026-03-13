@@ -29,7 +29,8 @@ def parse_csv_input():
                 continue
 
             # Validate required fields (cf_project, repo_name, address_line2, service_type are auto-generated)
-            required_fields = ['domain', 'city', 'business_name', 'phone', 'address_line1', 'postcode', 'areas_radius_miles']
+            # Note: phone is optional (can be blank)
+            required_fields = ['domain', 'city', 'business_name', 'address_line1', 'postcode', 'areas_radius_miles']
             missing = [f for f in required_fields if not row.get(f)]
 
             if missing:
